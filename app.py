@@ -74,13 +74,6 @@ html = """
             cursor: pointer;
             margin-top: 12px;
         }
-        .result-box {
-            margin-top: 36px;
-            padding: 20px;
-            border-radius: 14px;
-            background: #f7f4ff;
-            border: 1px solid #ddd;
-        }
     </style>
 </head>
 <body>
@@ -88,7 +81,7 @@ html = """
     <p>各項目について、もっとも近いものを選んでください。</p>
     <p>採点ルール：はい = 2点 / どちらとも言えない = 1点 / いいえ = 0点</p>
 
-    <form method="post">
+    <form method="post" action="/result">
         {% for q in questions %}
         <div class="question">
             <div class="question-title">Q{{ q.id }}. {{ q.text }}</div>
@@ -101,12 +94,47 @@ html = """
         {% endfor %}
         <button type="submit">結果を見る</button>
     </form>
+</body>
+</html>
+"""
 
-    {% if scores %}
+result_html = """
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>診断結果</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 24px 16px 60px;
+            color: #333;
+            line-height: 1.7;
+            background: #fff;
+        }
+        .result-box {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: 14px;
+            background: #f7f4ff;
+            border: 1px solid #ddd;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>診断結果</h1>
+
     <div class="result-box">
-        <h2>診断結果</h2>
         <p><strong>もっとも高かったタイプ：</strong>{{ highest_label }}</p>
         <p>{{ highest_comment }}</p>
+
         <ul>
             <li>CP: {{ scores["CP"] }} 点</li>
             <li>NP: {{ scores["NP"] }} 点</li>
@@ -115,32 +143,37 @@ html = """
             <li>AC: {{ scores["AC"] }} 点</li>
         </ul>
     </div>
-    {% endif %}
+
+    <a href="/" class="back-link">もう一度診断する</a>
 </body>
 </html>
 """
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def index():
-    scores = None
-    highest_label = None
-    highest_comment = None
-
-    if request.method == "POST":
-        scores = {"CP": 0, "NP": 0, "A": 0, "FC": 0, "AC": 0}
-
-        for q in questions:
-            answer = int(request.form.get(f"q{q['id']}", 0))
-            scores[q["type"]] += answer
-
-        highest_type = max(scores, key=scores.get)
-        highest_label = type_labels[highest_type]
-        highest_comment = type_comments[highest_type]
-
     return render_template_string(
         html,
-        questions=questions,
+        questions=questions
+    )
+
+@app.route("/result", methods=["POST"])
+def result():
+    scores = {"CP": 0, "NP": 0, "A": 0, "FC": 0, "AC": 0}
+
+    for q in questions:
+        answer = int(request.form.get(f"q{q['id']}", 0))
+        scores[q["type"]] += answer
+
+    highest_type = max(scores, key=scores.get)
+    highest_label = type_labels[highest_type]
+    highest_comment = type_comments[highest_type]
+
+    return render_template_string(
+        result_html,
         scores=scores,
         highest_label=highest_label,
         highest_comment=highest_comment
     )
+
+if __name__ == "__main__":
+    app.run(debug=True)
