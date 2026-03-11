@@ -214,41 +214,37 @@ RESULT_HTML = """
   <a href="/" class="back-link">もう一度診断する</a>
 
   <script>
-    const ctx = document.getElementById('egoChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['CP', 'NP', 'A', 'FC', 'AC'],
-        datasets: [{
-          label: 'エゴグラム',
-          data: [
-            {{ result["CP"] }},
-            {{ result["NP"] }},
-            {{ result["A"] }},
-            {{ result["FC"] }},
-            {{ result["AC"] }}
-          ],
-          backgroundColor: [
-            '#ff7675',
-            '#74b9ff',
-            '#55efc4',
-            '#ffeaa7',
-            '#a29bfe'
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 2
-            }
-          }
-        }
+const ctx = document.getElementById('egoChart').getContext('2d');
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: ['CP', 'NP', 'A', 'FC', 'AC'],
+    datasets: [{
+      label: 'エゴグラム',
+      data: [
+        {{ result["CP"] }},
+        {{ result["NP"] }},
+        {{ result["A"] }},
+        {{ result["FC"] }},
+        {{ result["AC"] }}
+      ],
+      borderColor: '#6a5acd',
+      backgroundColor: 'rgba(106,90,205,0.2)',
+      fill: false,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 50
       }
-    });
+    }
+  }
+});
   </script>
 </body>
 </html>
