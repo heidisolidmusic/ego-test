@@ -69,76 +69,63 @@ TYPE_LABELS = {
 }
 
 TYPE_COMMENTS = {
-    "CP": "責任感や倫理観が強く、きちんとした姿勢を大切にする傾向があります。反面、自分にも他人にも厳しくなりすぎると、しんどさにつながることがあります。",
-    "NP": "思いやりや共感力が高く、人を支える力がある傾向があります。反面、世話を焼きすぎたり、自分を後回しにしすぎたりしやすい面もあります。",
-    "A": "冷静に考え、客観的に判断する力が高い傾向があります。反面、感情表現が抑えられすぎると、距離感が出やすくなることがあります。",
-    "FC": "自由さや好奇心、感情の豊かさが強みとして表れやすい傾向があります。反面、衝動性や気分優先になりすぎると不安定さにつながることがあります。",
-    "AC": "周囲への配慮や適応力が高く、人間関係を円滑に保つ力があります。反面、合わせすぎて疲れたり、本音を抑え込みやすかったりすることがあります。",
+    "CP": "責任感や倫理観が強く、きちんとした姿勢を大切にする傾向があります。",
+    "NP": "思いやりや共感力が高く、人を支える力がある傾向があります。",
+    "A": "冷静に考え、客観的に判断する力が高い傾向があります。",
+    "FC": "自由さや好奇心、感情の豊かさが強みとして表れやすい傾向があります。",
+    "AC": "周囲への配慮や適応力が高く、人間関係を円滑に保つ力があります。",
 }
 
 INDEX_HTML = """
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>エゴグラム50問チェック</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: sans-serif;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 16px;
-      color: #333;
-      line-height: 1.7;
-    }
-    .question {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 16px;
-      background: #fafafa;
-    }
-    .choices label {
-      display: block;
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-    button {
-      background: #6a5acd;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .note {
-      font-size: 14px;
-      color: #666;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>エゴグラム50問チェック</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{
+font-family:sans-serif;
+max-width:900px;
+margin:40px auto;
+padding:0 16px;
+}
+.question{
+border:1px solid #ddd;
+border-radius:10px;
+padding:16px;
+margin-bottom:16px;
+background:#fafafa;
+}
+button{
+background:#6a5acd;
+color:white;
+border:none;
+padding:12px 24px;
+border-radius:8px;
+cursor:pointer;
+}
+</style>
 </head>
 <body>
-  <h1>エゴグラム 50問セルフチェック</h1>
-  <p>各質問について、もっとも近いものを選んでください。</p>
-  <p class="note">※これは医療診断ではなく、自己理解のためのセルフチェックです。</p>
 
-  <form method="post" action="/result">
-    {% for q in questions %}
-      <div class="question">
-        <p><strong>Q{{ loop.index }}. {{ q.text }}</strong></p>
-        <div class="choices">
-          <label><input type="radio" name="q{{ q.id }}" value="1" required> 1 まったく当てはまらない</label>
-          <label><input type="radio" name="q{{ q.id }}" value="2"> 2 あまり当てはまらない</label>
-          <label><input type="radio" name="q{{ q.id }}" value="3"> 3 どちらともいえない</label>
-          <label><input type="radio" name="q{{ q.id }}" value="4"> 4 やや当てはまる</label>
-          <label><input type="radio" name="q{{ q.id }}" value="5"> 5 とても当てはまる</label>
-        </div>
-      </div>
-    {% endfor %}
-    <button type="submit">結果を見る</button>
-  </form>
+<h1>エゴグラム50問セルフチェック</h1>
+
+<form method="post" action="/result">
+{% for q in questions %}
+<div class="question">
+<p><strong>Q{{loop.index}}. {{q.text}}</strong></p>
+
+<label><input type="radio" name="q{{q.id}}" value="2" required> 当てはまる</label>
+<label><input type="radio" name="q{{q.id}}" value="1"> どちらでもない</label>
+<label><input type="radio" name="q{{q.id}}" value="0"> 当てはまらない</label>
+
+</div>
+{% endfor %}
+
+<button type="submit">結果を見る</button>
+
+</form>
 </body>
 </html>
 """
@@ -147,110 +134,121 @@ RESULT_HTML = """
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>診断結果</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 16px;
-      color: #333;
-      line-height: 1.7;
-    }
-    .result {
-      margin-top: 32px;
-      padding: 20px;
-      border: 2px solid #6a5acd;
-      border-radius: 10px;
-      background: #f7f4ff;
-    }
-    .score-box {
-      margin: 8px 0;
-      padding: 10px;
-      background: white;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-    }
-    .note {
-      font-size: 14px;
-      color: #666;
-    }
-    .back-link {
-      display: inline-block;
-      margin-top: 20px;
-    }
-    canvas {
-      margin-top: 24px;
-      background: white;
-      border-radius: 8px;
-      padding: 8px;
-      border: 1px solid #ddd;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>診断結果</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+body{
+font-family:sans-serif;
+max-width:900px;
+margin:40px auto;
+padding:0 16px;
+}
+
+.result{
+margin-top:32px;
+padding:20px;
+border:2px solid #6a5acd;
+border-radius:10px;
+background:#f7f4ff;
+}
+
+.score-box{
+margin:8px 0;
+padding:10px;
+background:white;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+button{
+background:#6a5acd;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+cursor:pointer;
+}
+</style>
 </head>
+
 <body>
-  <h1>診断結果</h1>
 
-  <div class="result">
-    <h2>もっとも高いタイプ：{{ highest_type }}</h2>
-    <p>{{ comment }}</p>
+<h1>診断結果</h1>
 
-    <div class="score-box">CP: {{ result["CP"] }} 点</div>
-    <div class="score-box">NP: {{ result["NP"] }} 点</div>
-    <div class="score-box">A: {{ result["A"] }} 点</div>
-    <div class="score-box">FC: {{ result["FC"] }} 点</div>
-    <div class="score-box">AC: {{ result["AC"] }} 点</div>
+<div class="result">
 
-    <canvas id="egoChart" width="400" height="220"></canvas>
+<h2>もっとも高いタイプ：{{highest_type}}</h2>
 
-    <p class="note">
-      点数はあくまで傾向の目安です。高低に良し悪しはなく、バランスを見ることが大切です。
-    </p>
-  </div>
+<p>{{comment}}</p>
 
-  <a href="/" class="back-link">もう一度診断する</a>
+<div class="score-box">CP {{result["CP"]}}</div>
+<div class="score-box">NP {{result["NP"]}}</div>
+<div class="score-box">A {{result["A"]}}</div>
+<div class="score-box">FC {{result["FC"]}}</div>
+<div class="score-box">AC {{result["AC"]}}</div>
 
-  <script>
-const ctx = document.getElementById('egoChart').getContext('2d');
+<canvas id="egoChart" width="400" height="220"></canvas>
 
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ['CP', 'NP', 'A', 'FC', 'AC'],
-    datasets: [{
-      label: 'エゴグラム',
-      data: [
-        {{ result["CP"] }},
-        {{ result["NP"] }},
-        {{ result["A"] }},
-        {{ result["FC"] }},
-        {{ result["AC"] }}
-      ],
-      borderColor: '#6a5acd',
-      backgroundColor: 'rgba(106,90,205,0.2)',
-      fill: false,
-      tension: 0.3
-    }]
-  },
-  options: {
-    responsive: true,
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 50
-      }
-    }
-  }
+<br><br>
+
+<button onclick="saveResult()">結果を画像保存</button>
+
+</div>
+
+<script>
+
+function saveResult(){
+html2canvas(document.querySelector(".result")).then(canvas=>{
+const link=document.createElement("a");
+link.download="egogram_result.png";
+link.href=canvas.toDataURL();
+link.click();
+alert("画像を保存しました");
 });
-  </script>
+}
+
+const ctx=document.getElementById('egoChart').getContext('2d');
+
+new Chart(ctx,{
+type:'line',
+data:{
+labels:['CP','NP','A','FC','AC'],
+datasets:[{
+label:'エゴグラム',
+data:[
+{{result["CP"]}},
+{{result["NP"]}},
+{{result["A"]}},
+{{result["FC"]}},
+{{result["AC"]}}
+],
+borderColor:'#6a5acd',
+backgroundColor:'rgba(106,90,205,0.2)',
+fill:false,
+tension:0.3
+}]
+},
+options:{
+scales:{
+y:{
+beginAtZero:true,
+max:20
+}
+}
+}
+});
+</script>
+
 </body>
 </html>
 """
 
-@app.route("/", methods=["GET"])
+@app.route("/")
 def index():
     shuffled = QUESTIONS.copy()
     random.shuffle(shuffled)
@@ -258,15 +256,16 @@ def index():
 
 @app.route("/result", methods=["POST"])
 def result():
-    result_scores = {"CP": 0, "NP": 0, "A": 0, "FC": 0, "AC": 0}
+
+    result_scores={"CP":0,"NP":0,"A":0,"FC":0,"AC":0}
 
     for q in QUESTIONS:
-        value = int(request.form.get(f"q{q['id']}", 0))
-        result_scores[q["type"]] += value
+        value=int(request.form.get(f"q{q['id']}",0))
+        result_scores[q["type"]]+=value
 
-    highest_key = max(result_scores, key=result_scores.get)
-    highest_type = TYPE_LABELS[highest_key]
-    comment = TYPE_COMMENTS[highest_key]
+    highest_key=max(result_scores,key=result_scores.get)
+    highest_type=TYPE_LABELS[highest_key]
+    comment=TYPE_COMMENTS[highest_key]
 
     return render_template_string(
         RESULT_HTML,
